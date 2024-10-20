@@ -1,0 +1,9 @@
+FLASK_APP=app.py
+FLASK_ENV=development
+SECRET_KEY=supersecretkey
+MAIL_USERNAME=tuemail@gmail.com
+MAIL_PASSWORD=tucontraseña
+MAIL_DEFAULT_SENDER=tuemail@gmail.com
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USE_TLS=True
