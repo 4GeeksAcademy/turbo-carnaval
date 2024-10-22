@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -11,9 +12,22 @@ app = Flask(__name__)
 CORS(app)
 app.config.from_object('config')
 
+
+# Obtener la ruta base del directorio donde se encuentra este archivo
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+# Construir la ruta completa hacia el archivo site.db dentro de la carpeta instance
+DATABASE_PATH = os.path.join(basedir, 'instance', 'site.db')
+
+# Configurar la URI de la base de datos
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DATABASE_PATH}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Evitar advertencias
+
+
 # Configuración de la base de datos
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'  # Usando SQLite
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///backend/ecommerce.db'
+#   # Usando SQLite
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  
 
 
 # db = SQLAlchemy(app)
@@ -21,7 +35,10 @@ db.init_app(app)
 
 
 # Crear la base de datos y las tablas
-with app.app_context():
+# with app.app_context():
+
+@app.before_first_request
+def create_tables():
     db.create_all()
 
 
@@ -85,4 +102,4 @@ def create_order():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=3001)
+    app.run(debug=True, host='0.0.0.0', port=5000)
