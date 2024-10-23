@@ -1,16 +1,48 @@
 import os
-from flask import Flask
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from models import db
-from app import db
+# from app import db
 from flask import Flask, jsonify, request
-from models import db, User, Product, Order 
-from routes import routes_bp
+# from models import db, User, Product, Order 
+# from routes import routes_bp
+import importlib.metadata  # Importar el módulo para obtener la versión
+
+
 
 app = Flask(__name__)
 CORS(app)
+
+
+# Configurar la URI de la base de datos
 app.config.from_object('config')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/site.db'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Evitar advertencias
+db = SQLAlchemy(app)
+# db.init_app(app)
+
+
+print(importlib.metadata.version("flask"))  
+
+
+ # Crea la carpeta 'instance' si no existe
+if not os.path.exists(app.instance_path):
+        os.makedirs(app.instance_path)
+
+
+@app.before_first_request
+def create_tables(): 
+    # Obtiene la ruta absoluta de la base de datos
+    db_file = os.path.join(app.instance_path, 'site.db')
+    print("Ruta de la base de datos:", db_file)  # Imprimir la ruta de la base de datos
+
+
+# Crear la base de datos y las tablas
+# with app.app_context():
+    # Crea las tablas si no existen
+    db.create_all()
+
 
 
 # Obtener la ruta base del directorio donde se encuentra este archivo
@@ -18,29 +50,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Construir la ruta completa hacia el archivo site.db dentro de la carpeta instance
 DATABASE_PATH = os.path.join(basedir, 'instance', 'site.db')
-
-# Configurar la URI de la base de datos
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DATABASE_PATH}'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Evitar advertencias
-
-
-# Configuración de la base de datos
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///backend/ecommerce.db'
-#   # Usando SQLite
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  
-
-
-# db = SQLAlchemy(app)
-db.init_app(app)
-
-
-# Crear la base de datos y las tablas
-# with app.app_context():
-
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
 
 
 app.register_blueprint(routes_bp)

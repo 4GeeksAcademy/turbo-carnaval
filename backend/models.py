@@ -14,6 +14,9 @@ class User(db.Model):
     password = db.Column(db.String(200), nullable=False)
     orders = db.relationship('Order', backref='user', lazy=True)
 
+    def __repr__(self):
+        return f'<User {self.username}>' 
+
 class Product(db.Model):
     __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True)
@@ -22,6 +25,10 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     image_url = db.Column(db.String(500), nullable=True)  # URL de la imagen
 
+    def __repr__(self):
+        return f'<Product {self.name}>'  # Representación del objeto Product
+
+
 class Order(db.Model):
     __tablename__ = 'orders'
     id = db.Column(db.Integer, primary_key=True)
@@ -29,3 +36,6 @@ class Order(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+    def __repr__(self):
+        return f'<Order {self.id} by User {self.user_id}>'  # Representación del objeto Order
