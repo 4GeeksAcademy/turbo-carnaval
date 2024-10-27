@@ -1,9 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager, create_access_token
+from datetime import datetime
 
 db = SQLAlchemy()
-
-
-# from app import db
+bcrypt = Bcrypt()
+jwt = JWTManager()
 
 
 class User(db.Model):
@@ -14,8 +16,13 @@ class User(db.Model):
     password = db.Column(db.String(200), nullable=False)
     orders = db.relationship('Order', backref='user', lazy=True)
 
-    def __repr__(self):
-        return f'<User {self.username}>' 
+def set_password(self, password):
+        #  Hashea la contraseña y la guarda en `password_hash`
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+def check_password(self, password):
+        #  Verifica si la contraseña proporcionada coincide con el hash almacenado.
+        return bcrypt.check_password_hash(self.password, password)
 
 class Product(db.Model):
     __tablename__ = 'products'
