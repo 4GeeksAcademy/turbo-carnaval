@@ -1,9 +1,10 @@
 from flask_sqlalchemy import SQLAlchemy
+from app import db  # Importa la instancia de db desde app.py
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token
 from datetime import datetime
 
-db = SQLAlchemy()
+
 bcrypt = Bcrypt()
 jwt = JWTManager()
 

@@ -3,7 +3,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from models import db
-from app import db
 from flask import Flask, jsonify, request
 from config import Config
 from models import db, bcrypt, jwt
@@ -27,11 +26,13 @@ jwt = JWTManager(app)
 
 
 # Configurar la URI de la base de datos
-app.config.from_object('config')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/site.db'
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Evitar advertencias
-# db = SQLAlchemy(app)
-db.init_app(app)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # Evitar advertencias
+
+
+# Inicializa las extensiones
+db = SQLAlchemy(app)  # Crea la instancia de SQLAlchemy
+bcrypt = Bcrypt(app)  # Crea la instancia de Bcrypt
 
 
 print(importlib.metadata.version("flask"))  
@@ -40,6 +41,9 @@ print(importlib.metadata.version("flask"))
  # Crea la carpeta 'instance' si no existe
 if not os.path.exists(app.instance_path):
         os.makedirs(app.instance_path)
+
+        # Registra el blueprint de rutas
+app.register_blueprint(routes, url_prefix='/api')  # Prefijo opcional para las rutas
 
 
 @app.before_first_request
@@ -63,8 +67,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 DATABASE_PATH = os.path.join(basedir, 'instance', 'site.db')
 
 
-# Registra el blueprint de rutas
-app.register_blueprint(routes, url_prefix='/api')  # Prefijo opcional para las rutas
+
 
 
 
